@@ -49,6 +49,11 @@ HeadlessFrontend::HeadlessFrontend(Size size_,
 
 HeadlessFrontend::~HeadlessFrontend() = default;
 
+void HeadlessFrontend::recreate() {
+    assert(renderer);
+    renderer = std::make_unique<Renderer>(*getBackend(), pixelRatio, optional<std::string>());
+}
+
 void HeadlessFrontend::reset() {
     assert(renderer);
     renderer.reset();

@@ -35,6 +35,7 @@ public:
     ~HeadlessFrontend() override;
 
     void reset() override;
+    void recreate() override;
     void update(std::shared_ptr<UpdateParameters>) override;
     void setObserver(RendererObserver&) override;
 
