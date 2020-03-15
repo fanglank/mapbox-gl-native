@@ -75,13 +75,13 @@ void TransformState::matrixFor(mat4& matrix, const UnwrappedTileID& tileID) cons
     matrix::scale(matrix, matrix, s / util::EXTENT, s / util::EXTENT, 1);
 }
 
-void TransformState::getProjMatrix(mat4& projMatrix, uint16_t nearZ, bool aligned) const {
+void TransformState::getProjMatrix(mat4& projMatrix, uint16_t nearZ, bool aligned, bool zeroCentered) const {
     if (size.isEmpty()) {
         return;
     }
 
     const double cameraToCenterDistance = getCameraToCenterDistance();
-    auto offset = getCenterOffset();
+    const ScreenCoordinate offset = getCenterOffset();
 
     // Find the Z distance from the viewport center point
     // [width/2 + offset.x, height/2 + offset.y] to the top edge; to point
@@ -132,7 +132,9 @@ void TransformState::getProjMatrix(mat4& projMatrix, uint16_t nearZ, bool aligne
     matrix::rotate_z(projMatrix, projMatrix, getBearing() + getNorthOrientationAngle());
 
     const double dx = pixel_x() - size.width / 2.0f, dy = pixel_y() - size.height / 2.0f;
-    matrix::translate(projMatrix, projMatrix, dx, dy, 0);
+    if (!zeroCentered) {
+        matrix::translate(projMatrix, projMatrix, dx, dy, 0);
+    }
 
     if (axonometric) {
         // mat[11] controls perspective
@@ -498,11 +500,15 @@ double TransformState::scaleZoom(double s) const {
 }
 
 ScreenCoordinate TransformState::latLngToScreenCoordinate(const LatLng& latLng) const {
+    vec4 p;
+    return latLngToScreenCoordinate(latLng, p);
+}
+
+ScreenCoordinate TransformState::latLngToScreenCoordinate(const LatLng& latLng, vec4& p) const {
     if (size.isEmpty()) {
         return {};
     }
 
-    vec4 p;
     Point<double> pt = Projection::project(latLng, scale) / util::tileSize;
     vec4 c = {{pt.x, pt.y, 0, 1}};
     matrix::transformMat4(p, c, getCoordMatrix());

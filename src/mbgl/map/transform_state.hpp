@@ -111,7 +111,7 @@ public:
 
     // Matrix
     void matrixFor(mat4&, const UnwrappedTileID&) const;
-    void getProjMatrix(mat4& matrix, uint16_t nearZ = 1, bool aligned = false) const;
+    void getProjMatrix(mat4& matrix, uint16_t nearZ = 1, bool aligned = false, bool zeroCentered = false) const;
 
     // Dimensions
     Size getSize() const;
@@ -196,6 +196,7 @@ public:
 
     // Conversion
     ScreenCoordinate latLngToScreenCoordinate(const LatLng&) const;
+    ScreenCoordinate latLngToScreenCoordinate(const LatLng&, vec4&) const;
     LatLng screenCoordinateToLatLng(const ScreenCoordinate&, LatLng::WrapMode = LatLng::Unwrapped) const;
     // Implements mapbox-gl-js pointCoordinate() : MercatorCoordinate.
     TileCoordinate screenCoordinateToTileCoordinate(const ScreenCoordinate&, uint8_t atZoom) const;
